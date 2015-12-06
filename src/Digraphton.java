@@ -5,15 +5,17 @@ import java.util.ArrayList;
  */
 public class Digraphton {
     private int[][] adjTransition;//MATRIZ DE ADJACENCIA
-    final private int start;//ESTADO INICIAL
-    final private ArrayList<Integer> accept;//ESTADOS DE ACEITACAO 
+    private int start;//ESTADO INICIAL
+    private boolean[] accept;
+    //final private ArrayList<Integer> accept;//ESTADOS DE ACEITACAO 
     
     public Digraphton(int[][] transition, int st, ArrayList<Integer> acp)
     {
         adjTransition = convertTransition(transition);
         start = st;
-        accept = new ArrayList();
-        accept.addAll(acp);
+        accept = new boolean[adjTransition.length];
+        for(int i =0; i < accept.length; i++)
+            accept[i] = acp.contains(i);
     }
     
     public int whereAllBegins()//RETORNA ESTADO INICIAL
@@ -27,20 +29,6 @@ public class Digraphton {
     }
         
     public void byeState(int dead){//Anarchist metod //REMOVE ESTADO
-//        if(dead == start) return;
-//        int[][] yoshi = new int[adjTransition.length-1][adjTransition[0].length-1];
-//        int k=0, l=0;
-//        for(int i = 0; i < yoshi.length; i++){
-//            if (i == dead) k++;
-//            for(int j =0; j < yoshi[0].length; j++)
-//            {
-//                if(j == dead) l++;
-//                yoshi[i][j] = adjTransition[k][l];
-//                l++;
-//            }
-//            k++;
-//        }
-//        adjTransition = yoshi.clone();
           for(int i = dead+1; i < adjTransition.length; i++)
               for(int j = 0; j < adjTransition[0].length; j++)
                   adjTransition[i-1][j] = adjTransition[i][j];
@@ -52,6 +40,17 @@ public class Digraphton {
               for(int j = 0; j < yoshi[0].length; j++)
                   yoshi[i][j] = adjTransition[i][j];
           adjTransition = yoshi.clone();
+          
+          for(int i =dead+1; i < accept.length; i++)
+              accept[i-1] = accept[i];
+          boolean [] acp = new boolean [accept.length-1];
+          for(int i =0; i < acp.length; i++)
+              acp[i] = accept[i];
+          
+          accept = acp.clone();
+          
+          if(start > dead) start--;
+          
     }
     
     public static int[][] convertTransition(int [][] t)//CONVERTE TRANSICAO FORMATO LAURETTO PRA FORMATO GRAFO
