@@ -8,11 +8,21 @@ import java.util.Scanner;
  */
 public class Main {
     public static void main(String args[]) throws FileNotFoundException
-    {   String x = "afd1.txt";
-        readingNews(x);
+    {   
+        //args[0] = entrada, args[1] = saida.
+        try{
+        String x = "afd1.txt";
+        Digraphton d = readingNews(x);
+        boolean wall[] = DFS(d);
+        for(int i = 0; i < wall.length; i++)//INUTEIS - INALCANCAVEIS A PARTIR DO INICIO
+            if(!wall[i])
+                d.byeState(i);
+       
+        }catch(Exception e )
+        {}
     }
     
-    public static Digraphton readingNews(String arq) throws FileNotFoundException
+    public static Digraphton readingNews(String arq) throws FileNotFoundException //LEITURA DO ARQUIVO
     {
         Scanner sc = new Scanner(new File(arq));
         int states = sc.nextInt();
@@ -29,6 +39,25 @@ public class Main {
         return new Digraphton(transit, start, acp);
     }
     
+    public static boolean[] DFS(Digraphton d)//BUSCA EM PROFUNDIDADE RETORNANDO ARRAY DE VISITADOS
+    {
+        boolean [] travelingAchieve = new boolean [d.sexTypeThing().length];
+        for(int i =0; i < travelingAchieve.length; i++)
+            travelingAchieve[i] = false;
+        getTbeSmokers(d, travelingAchieve, d.whereAllBegins());
+        return travelingAchieve;
+    }
     
+    public static void getTbeSmokers(Digraphton d, boolean[] vst, int friend)//BUSCA EM PROFUNDIDADE RECURSÃO
+    {
+        vst[friend] = true;
+        int[][] adj = d.sexTypeThing();
+        for(int i = 0; i < adj[0].length; i++)
+            if(adj[friend][i] >= 0 && vst[i] == false)
+                getTbeSmokers(d, vst, i);
+        
+        //if(friend==d.whereAllBegins())
+            //return vst;
+    }
     
 }
