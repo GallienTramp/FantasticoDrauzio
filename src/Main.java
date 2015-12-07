@@ -16,6 +16,10 @@ import java.util.Scanner;
 
 //Classe MAIN - Execucao de rotinas
 public class Main {
+	
+	//Constantes para estados equivalentes e nao equivalentes
+	private final int EQUIVALENTE = 1;
+	private final int NAOEQUIVALENTE = 0;
 
 	//Metodo main recebe dois argumentos: Arquivo de entrada e arquivo de saida (nomes)
 	public static void main(String args[]) throws FileNotFoundException
@@ -149,4 +153,33 @@ public class Main {
                 DFSrecursive(d, vst, i);
     }
     
+    //Método que identifica estados equivalentes
+    public void EstadosEquivalentes(Digraphton dig)
+    {
+    	int[][] matrizDeTransicao;
+    	matrizDeTransicao = dig.getTransitions();
+    	
+    	boolean[] estadosFinais;
+    	estadosFinais = dig.whereHappyMomentsHappens();
+    	
+    	int i, j;
+    	
+    	//1 - Particionar o conjunto em estados finais e nao finais
+    	int[][] matrizDeEquivalencia;
+    	
+    	matrizDeEquivalencia = new int[matrizDeTransicao.length][matrizDeTransicao.length];
+    	
+    	//Preencher a diagonal principal com -1
+    	for(i = 0; i < matrizDeEquivalencia.length; i++)
+    		matrizDeEquivalencia[i][i] = -1;
+    	
+    	//1a Classe de Equivalencia: Estados finais e nao finais
+    	for(i = 0; i < estadosFinais.length; i++)
+    		for(j = 0; j < estadosFinais.length; j++)
+    			if(estadosFinais[i] == estadosFinais[j] && i!=j)
+    				matrizDeEquivalencia[i][j] = matrizDeEquivalencia[j][i] = EQUIVALENTE;
+    	
+    	//Ao fim desse passo a matriz de equivalencia estara dividida em duas classes de equivalencia:
+    	//Estados finais e estados nao finais
+    }
 }
