@@ -42,13 +42,13 @@ public class Main {
             wall = DFS(rmv);
             for(int i =0; i < wall.length; i++)//Os que nao foram visitados sao guardados num arrayList
                 if(!wall[i]) hv2bremoved.add(i);
-            removed.retainAll(hv2bremoved);
+            removed.retainAll(hv2bremoved);//Mantem apenas os que n conseguem acessar nenhum dos estados de aceitacao
         }
         Collections.sort(removed, Collections.reverseOrder());//eh ordenado em ordem decrescente
-        for(Integer gone : removed)
+        for(Integer gone : removed)//Remove estes
             d.byeState(gone);//Removido
          
-        Digraphton.printT(d.sexTypeThing());
+        Digraphton.printT(Digraphton.reverseConvertTransition(d.getTransitions(), d.alphabetCont()));
        }catch(Exception e )
         {}
     }
@@ -67,25 +67,25 @@ public class Main {
         for(int i = 0; i < transit.length; i++)
             for(int j = 0; j< transit[0].length; j++)
                 transit[i][j] = sc.nextInt();
-        return new Digraphton(Digraphton.convertTransition(transit), start, acp);
+        return new Digraphton(Digraphton.convertTransition(transit),symbols, start, acp);
     }
     
     public static boolean[] DFS(Digraphton d)//BUSCA EM PROFUNDIDADE RETORNANDO ARRAY DE VISITADOS
     {
-        boolean [] travelingAchieve = new boolean [d.sexTypeThing().length];
+        boolean [] travelingAchieve = new boolean [d.getTransitions().length];
         for(int i =0; i < travelingAchieve.length; i++)
             travelingAchieve[i] = false;
-        getTbeSmokers(d, travelingAchieve, d.whereAllBegins());
+        DFSrecursive(d, travelingAchieve, d.whereAllBegins());
         return travelingAchieve;
     }
     
-    public static void getTbeSmokers(Digraphton d, boolean[] vst, int friend)//BUSCA EM PROFUNDIDADE RECURSÃO
+    public static void DFSrecursive(Digraphton d, boolean[] vst, int friend)//BUSCA EM PROFUNDIDADE RECURSÃO
     {
         vst[friend] = true;
-        int[][] adj = d.sexTypeThing();
+        int[][] adj = d.getTransitions();
         for(int i = 0; i < adj[0].length; i++)
             if(adj[friend][i] >= 0 && vst[i] == false)
-                getTbeSmokers(d, vst, i);
+                DFSrecursive(d, vst, i);
     }
     
 }
