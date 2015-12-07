@@ -11,7 +11,7 @@ public class Digraphton {
     
     public Digraphton(int[][] transition, int st, ArrayList<Integer> acp)
     {
-        adjTransition = convertTransition(transition);
+        adjTransition = transition;
         start = st;
         accept = new boolean[adjTransition.length];
         for(int i =0; i < accept.length; i++)
@@ -23,9 +23,14 @@ public class Digraphton {
         return start;
     }
     
+    public boolean[] whereHappyMomentsHappens()
+    {
+        return accept.clone();
+    }
+    
     public int[][] sexTypeThing()//RIP Scott //RETORNA MATRIX DE ADJACENCIA
     {
-        return adjTransition;
+        return adjTransition.clone();
     }
         
     public void byeState(int dead){//Anarchist metod //REMOVE ESTADO
@@ -71,6 +76,24 @@ public class Digraphton {
                 System.out.print(t[i][j] + " ");
             System.out.println();
         }
+    }
+    
+    public static int[][] transpose(int[][] m)
+    {
+        int[][] aux = new int[m[0].length][m.length];
+        for(int i =0; i < m.length; i++)
+            for(int j = 0; j < m.length; j++)
+                aux[j][i] = m[i][j];
+        return aux;
+    }
+    
+    public Digraphton reverseFlash(int beg)
+    {
+        int [][] auxT = transpose(this.adjTransition.clone());
+        ArrayList<Integer> ac = new ArrayList();
+        for(int i = 0; i < this.accept.length; i++)
+            if(!this.accept[i]) ac.add(i);
+        return new Digraphton(auxT,beg, ac);
     }
     
 }

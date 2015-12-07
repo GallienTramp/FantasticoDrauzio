@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Scanner;
 /**
  *
@@ -12,19 +13,43 @@ public class Main {
     {   
         //args[0] = entrada, args[1] = saida.
         try{
-        String x = "afd1.txt";
+        String x = "afd3.txt";
         Digraphton d = readingNews(x);//Cria o Digrafo
         boolean wall[] = DFS(d);//Faz uma busca em profundidade e recebe vetor com true para os que foram visitados e false cc.
         ArrayList<Integer> removed = new ArrayList();
         for(int i =0; i < wall.length; i++)//Os que nao foram visitados sao guardados num arrayList
             if(!wall[i]) removed.add(i);
         
+        //1a exclusao
         Collections.sort(removed, Collections.reverseOrder());//eh ordenado em ordem decrescente
         for(Integer gone : removed)
             d.byeState(gone);//Removido
+        //2a exclusao
+        removed.clear();
+        ArrayList<Digraphton> DrWells = new ArrayList();
+        boolean [] act = d.whereHappyMomentsHappens();
+        for(int i = 0; i < act.length; i++)
+            if(act[i]) DrWells.add(d.reverseFlash(i));
         
-        
-        }catch(Exception e )
+        Iterator<Digraphton> centralCity = DrWells.iterator();
+        Digraphton dgp = centralCity.next();
+        wall = DFS(dgp);
+        for(int i =0; i < wall.length; i++)//Os que nao foram visitados sao guardados num arrayList
+            if(!wall[i]) removed.add(i);
+        for(Digraphton rmv : DrWells)
+        {
+            ArrayList<Integer> hv2bremoved = new ArrayList();
+            wall = DFS(rmv);
+            for(int i =0; i < wall.length; i++)//Os que nao foram visitados sao guardados num arrayList
+                if(!wall[i]) hv2bremoved.add(i);
+            removed.retainAll(hv2bremoved);
+        }
+        Collections.sort(removed, Collections.reverseOrder());//eh ordenado em ordem decrescente
+        for(Integer gone : removed)
+            d.byeState(gone);//Removido
+         
+        Digraphton.printT(d.sexTypeThing());
+       }catch(Exception e )
         {}
     }
     
@@ -42,7 +67,7 @@ public class Main {
         for(int i = 0; i < transit.length; i++)
             for(int j = 0; j< transit[0].length; j++)
                 transit[i][j] = sc.nextInt();
-        return new Digraphton(transit, start, acp);
+        return new Digraphton(Digraphton.convertTransition(transit), start, acp);
     }
     
     public static boolean[] DFS(Digraphton d)//BUSCA EM PROFUNDIDADE RETORNANDO ARRAY DE VISITADOS
@@ -63,14 +88,4 @@ public class Main {
                 getTbeSmokers(d, vst, i);
     }
     
-    public static int[][] transpose(int[][] m)
-    {
-        int[][] aux = new int[m[0].length][m.length];
-        
-        for(int i =0; i < m.length; i++)
-            for(int j = 0; j < m.length; j++)
-                aux[j][i] = m[i][j];
-        
-        return aux;
-    }
 }
