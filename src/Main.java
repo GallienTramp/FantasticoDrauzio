@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 /**
  *
@@ -12,12 +13,17 @@ public class Main {
         //args[0] = entrada, args[1] = saida.
         try{
         String x = "afd1.txt";
-        Digraphton d = readingNews(x);
-        boolean wall[] = DFS(d);
-        for(int i = 0; i < wall.length; i++)//INUTEIS - INALCANCAVEIS A PARTIR DO INICIO
-            if(!wall[i])
-                d.byeState(i);
-       
+        Digraphton d = readingNews(x);//Cria o Digrafo
+        boolean wall[] = DFS(d);//Faz uma busca em profundidade e recebe vetor com true para os que foram visitados e false cc.
+        ArrayList<Integer> removed = new ArrayList();
+        for(int i =0; i < wall.length; i++)//Os que nao foram visitados sao guardados num arrayList
+            if(!wall[i]) removed.add(i);
+        
+        Collections.sort(removed, Collections.reverseOrder());//eh ordenado em ordem decrescente
+        for(Integer gone : removed)
+            d.byeState(gone);//Removido
+        
+        
         }catch(Exception e )
         {}
     }
@@ -55,9 +61,16 @@ public class Main {
         for(int i = 0; i < adj[0].length; i++)
             if(adj[friend][i] >= 0 && vst[i] == false)
                 getTbeSmokers(d, vst, i);
-        
-        //if(friend==d.whereAllBegins())
-            //return vst;
     }
     
+    public static int[][] transpose(int[][] m)
+    {
+        int[][] aux = new int[m[0].length][m.length];
+        
+        for(int i =0; i < m.length; i++)
+            for(int j = 0; j < m.length; j++)
+                aux[j][i] = m[i][j];
+        
+        return aux;
+    }
 }

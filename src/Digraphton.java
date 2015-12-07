@@ -29,27 +29,24 @@ public class Digraphton {
     }
         
     public void byeState(int dead){//Anarchist metod //REMOVE ESTADO
-          for(int i = dead+1; i < adjTransition.length; i++)
+          for(int i = dead+1; i < adjTransition.length; i++)//Sobrepoe a linha do estado removido
               for(int j = 0; j < adjTransition[0].length; j++)
                   adjTransition[i-1][j] = adjTransition[i][j];
-          for(int i = 0; i < adjTransition.length; i++)
+          for(int i = 0; i < adjTransition.length; i++)//Sobrepoe a coluna do estado removido
               for(int j = dead+1; j < adjTransition[0].length; j++)
                   adjTransition[i][j-1] = adjTransition[i][j];
           int [][] yoshi = new int[adjTransition.length-1][adjTransition[0].length-1];
-          for(int i = 0; i < yoshi.length; i++)
+          for(int i = 0; i < yoshi.length; i++)//passa para um vetor auxiliar
               for(int j = 0; j < yoshi[0].length; j++)
                   yoshi[i][j] = adjTransition[i][j];
-          adjTransition = yoshi.clone();
-          
-          for(int i =dead+1; i < accept.length; i++)
+          adjTransition = yoshi.clone();//recebe o auxiliar
+          for(int i =dead+1; i < accept.length; i++)//sobrepoe o estado removido
               accept[i-1] = accept[i];
-          boolean [] acp = new boolean [accept.length-1];
-          for(int i =0; i < acp.length; i++)
+          boolean [] acp = new boolean [accept.length-1];//auxiliar
+          for(int i =0; i < acp.length; i++)//transfere pro auxiliar
               acp[i] = accept[i];
-          
-          accept = acp.clone();
-          
-          if(start > dead) start--;
+          accept = acp.clone();//guarda o auxiliar
+          if(start > dead) start--;//atualiza o valor do inicial
           
     }
     
