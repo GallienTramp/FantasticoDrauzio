@@ -19,14 +19,14 @@ public class Digraphton {
     //final private ArrayList<Integer> accept;//ESTADOS DE ACEITACAO 
     
     //Construtor - Cria o digrafo de acordo com os parametros passados
-    public Digraphton(int[][] transition,int symbol, int st, ArrayList<Integer> acp)
+    public Digraphton(int[][] transition,int symbol, int st, boolean[] acp)
     {
         adjTransition = transition;
         start = st;
         symbols = symbol;
         accept = new boolean[adjTransition.length];
         for(int i =0; i < accept.length; i++)
-            accept[i] = acp.contains(i);
+            accept[i] = acp[i];
     }
     
     //Metodo que retorna o estado inicial
@@ -108,7 +108,7 @@ public class Digraphton {
         int tr[][] = new int[t.length][s];
         
         for(int i = 0; i < tr.length; i++)
-            for(int j = 0; j < tr.length; j++)
+            for(int j = 0; j < tr[0].length; j++)
                 tr[i][j] = -1;
         for(int i =0; i < t.length; i++)
             for(int j = 0; j < t[i].length; j++)
@@ -145,12 +145,24 @@ public class Digraphton {
         int [][] auxT = transpose(this.adjTransition.clone());
         
         //Os novos estados de aceitacao serao aqueles que nao eram estados de aceitacao antes
-        ArrayList<Integer> ac = new ArrayList();
+        boolean[] ac = new boolean[accept.length];
         for(int i = 0; i < this.accept.length; i++)
-            if(!this.accept[i]) ac.add(i);
+            ac[i] = !accept[i];
         
         //Retornar o novo digrafo
         return new Digraphton(auxT,this.symbols, beg, ac);
+    }
+    
+    public int[] symbolsDefined(int state)
+    {
+        int[] definition = new int[this.symbols];
+        for(int i =0; i < definition.length; i++)
+            definition[i] = -1;
+        
+        for(int i =0; i < adjTransition[state].length; i++)
+            if(adjTransition[state][i] != -1) definition[adjTransition[state][i]] = 1;
+        
+        return definition;
     }
     
 }

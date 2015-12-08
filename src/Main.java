@@ -18,8 +18,8 @@ import java.util.Scanner;
 public class Main {
 	
 	//Constantes para estados equivalentes e nao equivalentes
-	private final int EQUIVALENTE = 1;
-	private final int NAOEQUIVALENTE = 0;
+	private final static int EQUIVALENTE = 1;
+	private final static int NAOEQUIVALENTE = 0;
 
 	//Metodo main recebe dois argumentos: Arquivo de entrada e arquivo de saida (nomes)
 	public static void main(String args[]) throws FileNotFoundException
@@ -28,7 +28,7 @@ public class Main {
         try
         {
         	
-        	String x = "afd3.txt";
+        	String x = "afd6.txt";
         	Digraphton d = readingNews(x);//Cria o Digrafo a partir dos dados de entrada
         	
         	//1o Objetivo - Eliminacao de estados inalcancaveis
@@ -87,15 +87,16 @@ public class Main {
 	        	d.byeState(gone);//Removido
          
 	        //Digrafo reduzido - sem estados inuteis nem estados inalcancaveis
-	        Digraphton.printT(Digraphton.reverseConvertTransition(d.getTransitions(), d.alphabetCont()));
+	        //Digraphton.printT(Digraphton.reverseConvertTransition(d.getTransitions(), d.alphabetCont()));
+                EstadosEquivalentes(d);
         }
         catch(Exception e )
         {
-        	//Tratamento de Erros
+        	e.printStackTrace();//Tratamento de Erros
         }
     }
     
-    //Método que lê o arquivo e constroi o digrafo
+    //Mï¿½todo que lï¿½ o arquivo e constroi o digrafo
     public static Digraphton readingNews(String arq) throws FileNotFoundException //LEITURA DO ARQUIVO
     {
         Scanner sc = new Scanner(new File(arq));
@@ -111,9 +112,9 @@ public class Main {
         int transit[][] = new int[states][symbols];
         
         //ArrayList de estados de aceitacao
-        ArrayList<Integer> acp = new ArrayList();
+        boolean[] acp = new boolean[states];
         for(int i = 0; i < states; i++)
-            if(sc.nextInt()==1) acp.add(i);
+            if(sc.nextInt()==1) acp[i] = true;
         
         //Populand a matriz de transicao
         for(int i = 0; i < transit.length; i++)
@@ -141,7 +142,7 @@ public class Main {
     }
     
     //Metodo que implementa uma busca em profundidade recursiva,
-    //recebe como entrada o digrafo, a referência de um array de visitados, e o ponto de partida (estado inicial)
+    //recebe como entrada o digrafo, a referï¿½ncia de um array de visitados, e o ponto de partida (estado inicial)
     public static void DFSrecursive(Digraphton d, boolean[] vst, int friend)
     {
         vst[friend] = true;
@@ -153,11 +154,11 @@ public class Main {
                 DFSrecursive(d, vst, i);
     }
     
-    //Método que identifica estados equivalentes
-    public void EstadosEquivalentes(Digraphton dig)
+    //Mï¿½todo que identifica estados equivalentes
+    public static void EstadosEquivalentes(Digraphton dig)
     {
-    	int[][] matrizDeTransicao;
-    	matrizDeTransicao = dig.getTransitions();
+    	int[][] matrizDeAdjacencia;
+    	matrizDeAdjacencia = dig.getTransitions();
     	
     	boolean[] estadosFinais;
     	estadosFinais = dig.whereHappyMomentsHappens();
@@ -167,7 +168,7 @@ public class Main {
     	//1 - Particionar o conjunto em estados finais e nao finais
     	int[][] matrizDeEquivalencia;
     	
-    	matrizDeEquivalencia = new int[matrizDeTransicao.length][matrizDeTransicao.length];
+    	matrizDeEquivalencia = new int[matrizDeAdjacencia.length][matrizDeAdjacencia.length];
     	
     	//Preencher a diagonal principal com -1
     	for(i = 0; i < matrizDeEquivalencia.length; i++)
@@ -181,5 +182,60 @@ public class Main {
     	
     	//Ao fim desse passo a matriz de equivalencia estara dividida em duas classes de equivalencia:
     	//Estados finais e estados nao finais
+        
+        //2a Classe de Equivalencia: TransiÃ§Ãµes definidas sob o mesmo simbolo.
+        for(i = 0; i < matrizDeEquivalencia.length; i++)
+            for(j = 0; j < matrizDeEquivalencia.length; j++)
+                if(matrizDeEquivalencia[i][j]== EQUIVALENTE)
+                {
+                    int [] s1 = dig.symbolsDefined(i);
+                    int [] s2 = dig.symbolsDefined(j);
+                    for(int k = 0; k < s1.length; k++)
+                        if(s1[k]!=s2[k]) matrizDeEquivalencia[i][j] = matrizDeEquivalencia[j][i] = NAOEQUIVALENTE;
+                }
+        //Ao fim desse passo a matriz de equivalencia estara dividida
+        //em classes de equivalencia de estados com transicao definida sob os mesmos simbolos
+        
+        //3a Classe de Equivalencia: TransiÃ§Ãµes iguais ou para estados equivalentes sob o mesmo simbolo
+        int[][] transicoes = Digraphton.reverseConvertTransition(matrizDeAdjacencia, dig.alphabetCont());//Volta ao formato inicial
+        for(i = 0; i < matrizDeEquivalencia.length; i++)
+            for(j = 0; j < matrizDeEquivalencia.length; j++)
+                if(matrizDeEquivalencia[i][j]== EQUIVALENTE)
+                {
+                    for(int k = 0; k < transicoes[0].length; k++)
+                        if(!(transicoes[i][k] == transicoes[j][k] || matrizDeEquivalencia[transicoes[i][k]][transicoes[j][k]] == EQUIVALENTE))
+                            matrizDeEquivalencia[i][j] = matrizDeEquivalencia[j][i] = NAOEQUIVALENTE;
+                }
+        
+        //Agrupamento
+        int c = 0;
+        int[] classeEq = new int[transicoes.length];
+        for(i = 0; i < classeEq.length; i++)
+            classeEq[i] = -1;
+        for(i = 0; i < classeEq.length; i++)
+            if(classeEq[i] == -1){
+                c++;
+                classeEq[i] = c-1;
+                for(j=0; j < matrizDeEquivalencia[0].length; j++)
+                    if(matrizDeEquivalencia[i][j] ==1) classeEq[j] = classeEq[i];
+            }
+        //Ao termino desse passo temos a qual classe de equivalencia cada estado pertence
+        
+        //Construcao do AFD minimo com c estados
+        int[][] novaTransicao = new int[c][dig.alphabetCont()];
+        for(i = 0; i < novaTransicao.length; i++)
+            for(j = 0; j < novaTransicao[0].length; j++)
+                novaTransicao[i][j] = -1;
+        
+        for(i = 0; i < transicoes.length; i++)
+            for(j = 0; j < transicoes[0].length; j++)
+                if(novaTransicao[classeEq[i]][j] == -1) novaTransicao[classeEq[i]][j] = transicoes[i][j] != -1 ? classeEq[transicoes[i][j]] : -1;
+        boolean[] aceitacao = new boolean[c];
+        boolean[] ac = dig.whereHappyMomentsHappens();
+        for(i = 0; i < ac.length; i++)
+            aceitacao[classeEq[i]] = ac[i];
+        
+        Digraphton.printT(novaTransicao);
+        Digraphton minimized = new Digraphton(novaTransicao, novaTransicao[0].length, classeEq[dig.whereAllBegins()], aceitacao);
     }
 }
