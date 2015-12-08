@@ -32,55 +32,18 @@ public class Main {
 
             String x = "afd6.txt";
             Digraphton d = readingNews(x);//Cria o Digrafo a partir dos dados de entrada
-
+            
             //1o Objetivo - Eliminacao de estados inalcancaveis
-            //Estados inalcancaveis - Nao podem ser atingidos a partir do estado inicial
-            boolean wall[] = DFS(d, d.whereAllBegins());//Faz uma busca em profundidade e recebe vetor com true para os que foram visitados e false cc.
-            ArrayList<Integer> removed = new ArrayList();
-            //Os que nao foram visitados sao guardados num arrayList
-            for (int i = 0; i < wall.length; i++) {
-                if (!wall[i]) {
-                    removed.add(i);
-                }
-            }
-            //Remover os estados
-            Collections.sort(removed, Collections.reverseOrder());//eh ordenado em ordem decrescente
-            removed.stream().forEach((gone) -> {
-                d.byeState(gone);//Removido
-            });
+            d = EstadosInacessiveis(d);
+            
             //2o Objetivo - Eliminacao de estados inuteis
-            //Estados inuteis - Estados que nao podem conduzir a um estado de aceitacao
-            removed.clear();
-            //Faz uma busca em profundidade a partir de cada estado que nao eh de aceitacao
-            boolean[] act = d.whereHappyMomentsHappens();
-            for (int i = 0; i < act.length; i++) {
-                if (!act[i]) {
-                    boolean[] visitors = DFS(d, i);
-                    boolean rm = false;
-                    for (int j = 0; j < act.length; j++) {
-                        if (act[j] && !visitors[j]) {
-                            rm = rm || false;
-                        } else if (act[j]) {
-                            rm = true;
-                        }
-                    }
-                    //Guarda aqueles que nao alcancam nenhum dos de aceitacao
-                    if (!rm) {
-                        removed.add(i);
-                    }
-                }
-            }
-
-            Collections.sort(removed, Collections.reverseOrder());//eh ordenado em ordem decrescente
-            //Remover os estados inuteis encontrados
-            removed.stream().forEach((gone) -> {
-                //Remove estes
-                d.byeState(gone);//Removido
-            });
-            removed.clear();
+            d = EstadosInuteis(d);
+            
             //Digrafo reduzido - sem estados inuteis nem estados inalcancaveis
-            //Busca estados equivalentes
-            EstadosEquivalentes(d);
+            //3o Objetivo Busca estados equivalentes
+            d = EstadosEquivalentes(d);
+            
+            System.out.println(d);
         } catch (FileNotFoundException e) {
             System.out.println("Arquivo nao encontrado");
         } catch (Exception e) {
@@ -153,8 +116,64 @@ public class Main {
         }
     }
 
+    public static Digraphton EstadosInacessiveis(Digraphton d)
+    {
+        
+            //Estados inalcancaveis - Nao podem ser atingidos a partir do estado inicial
+            boolean wall[] = DFS(d, d.whereAllBegins());//Faz uma busca em profundidade e recebe vetor com true para os que foram visitados e false cc.
+            ArrayList<Integer> removed = new ArrayList();
+            //Os que nao foram visitados sao guardados num arrayList
+            for (int i = 0; i < wall.length; i++) {
+                if (!wall[i]) {
+                    removed.add(i);
+                }
+            }
+            //Remover os estados
+            Collections.sort(removed, Collections.reverseOrder());//eh ordenado em ordem decrescente
+            removed.stream().forEach((gone) -> {
+                d.byeState(gone);//Removido
+            });
+            
+            return d;
+        
+    }
+    
+    public static Digraphton EstadosInuteis(Digraphton d)
+    {
+        
+            //Estados inuteis - Estados que nao podem conduzir a um estado de aceitacao
+            ArrayList <Integer>removed = new ArrayList();
+            //Faz uma busca em profundidade a partir de cada estado que nao eh de aceitacao
+            boolean[] act = d.whereHappyMomentsHappens();
+            for (int i = 0; i < act.length; i++) {
+                if (!act[i]) {
+                    boolean[] visitors = DFS(d, i);
+                    boolean rm = false;
+                    for (int j = 0; j < act.length; j++) {
+                        if (act[j] && !visitors[j]) {
+                            rm = rm || false;
+                        } else if (act[j]) {
+                            rm = true;
+                        }
+                    }
+                    //Guarda aqueles que nao alcancam nenhum dos de aceitacao
+                    if (!rm) {
+                        removed.add(i);
+                    }
+                }
+            }
+
+            Collections.sort(removed, Collections.reverseOrder());//eh ordenado em ordem decrescente
+            //Remover os estados inuteis encontrados
+            removed.stream().forEach((gone) -> {
+                //Remove estes
+                d.byeState(gone);//Removido
+            });
+            return d;
+    }
+    
     //M�todo que identifica estados equivalentes
-    public static void EstadosEquivalentes(Digraphton dig) {
+    public static Digraphton EstadosEquivalentes(Digraphton dig) {
         int[][] transicoes;
         transicoes = dig.getTransitions();
 
@@ -255,6 +274,6 @@ public class Main {
         }
 
         Digraphton minimized = new Digraphton(novaTransicao, novaTransicao[0].length, classeEq[dig.whereAllBegins()], aceitacao);
-        System.out.println(minimized);
+        return minimized;
     }
 }
