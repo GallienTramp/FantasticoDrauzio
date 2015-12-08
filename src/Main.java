@@ -2,7 +2,7 @@
 /**
  * *******************************************************************************
  */
-/*                         | UNIVERSIDADE DE SAO PAULO |                          */
+ /*                         | UNIVERSIDADE DE SAO PAULO |                          */
  /*                 | ESCOLA DE ARTES, CIENCIAS E HUMANIDADES |                    */
  /*--------------------------------------------------------------------------------*/
  /* Caio Tavares Cruz - 8921840 - T. 04                                            */
@@ -51,7 +51,7 @@ public class Main {
         }
     }
 
-    //M�todo que l� o arquivo e constroi o digrafo
+    //M�etodo que le o arquivo e constroi o digrafo
     public static Digraphton readingNews(String arq) throws FileNotFoundException //LEITURA DO ARQUIVO
     {
         Scanner sc = new Scanner(new File(arq));
@@ -116,12 +116,13 @@ public class Main {
         }
     }
 
+    //Metodo que identifica estados inacessiveis atraves de uma busca em profundidade
     public static Digraphton EstadosInacessiveis(Digraphton d)
     {
         
             //Estados inalcancaveis - Nao podem ser atingidos a partir do estado inicial
             boolean wall[] = DFS(d, d.whereAllBegins());//Faz uma busca em profundidade e recebe vetor com true para os que foram visitados e false cc.
-            ArrayList<Integer> removed = new ArrayList();
+            ArrayList<Integer> removed = new ArrayList<Integer>();
             //Os que nao foram visitados sao guardados num arrayList
             for (int i = 0; i < wall.length; i++) {
                 if (!wall[i]) {
@@ -142,7 +143,7 @@ public class Main {
     {
         
             //Estados inuteis - Estados que nao podem conduzir a um estado de aceitacao
-            ArrayList <Integer>removed = new ArrayList();
+            ArrayList <Integer>removed = new ArrayList<Integer>();
             //Faz uma busca em profundidade a partir de cada estado que nao eh de aceitacao
             boolean[] act = d.whereHappyMomentsHappens();
             for (int i = 0; i < act.length; i++) {
@@ -203,7 +204,7 @@ public class Main {
 
         //Ao fim desse passo a matriz de equivalencia estara dividida em duas classes de equivalencia:
         //Estados finais e estados nao finais
-        //2a Classe de Equivalencia: Transições definidas sob o mesmo simbolo.
+        //2a Classe de Equivalencia: Transicoes definidas sob o mesmo simbolo.
         for (i = 0; i < matrizDeEquivalencia.length; i++) {
             for (j = 0; j < matrizDeEquivalencia.length; j++) {
                 if (matrizDeEquivalencia[i][j] == EQUIVALENTE) {
@@ -220,7 +221,7 @@ public class Main {
         //Ao fim desse passo a matriz de equivalencia estara dividida
         //em classes de equivalencia de estados com transicao definida sob os mesmos simbolos
 
-        //3a Classe de Equivalencia: Transições iguais ou para estados equivalentes sob o mesmo simbolo
+        //3a Classe de Equivalencia: Transicoes iguais ou para estados equivalentes sob o mesmo simbolo
         for (i = 0; i < matrizDeEquivalencia.length; i++) {
             for (j = 0; j < matrizDeEquivalencia.length; j++) {
                 if (matrizDeEquivalencia[i][j] == EQUIVALENTE) {
