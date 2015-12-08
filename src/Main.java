@@ -32,31 +32,26 @@ public class Main {
 
             String x = "afd6.txt";
             Digraphton d = readingNews(x);//Cria o Digrafo a partir dos dados de entrada
+
             //1o Objetivo - Eliminacao de estados inalcancaveis
             //Estados inalcancaveis - Nao podem ser atingidos a partir do estado inicial
-
             boolean wall[] = DFS(d, d.whereAllBegins());//Faz uma busca em profundidade e recebe vetor com true para os que foram visitados e false cc.
-
             ArrayList<Integer> removed = new ArrayList();
-
             //Os que nao foram visitados sao guardados num arrayList
             for (int i = 0; i < wall.length; i++) {
                 if (!wall[i]) {
                     removed.add(i);
                 }
             }
-
             //Remover os estados
             Collections.sort(removed, Collections.reverseOrder());//eh ordenado em ordem decrescente
             removed.stream().forEach((gone) -> {
                 d.byeState(gone);//Removido
             });
-
             //2o Objetivo - Eliminacao de estados inuteis
             //Estados inuteis - Estados que nao podem conduzir a um estado de aceitacao
             removed.clear();
-
-            //A partir de cada estado de aceitacao, geraremos um novo automato reverso
+            //Faz uma busca em profundidade a partir de cada estado que nao eh de aceitacao
             boolean[] act = d.whereHappyMomentsHappens();
             for (int i = 0; i < act.length; i++) {
                 if (!act[i]) {
@@ -69,7 +64,7 @@ public class Main {
                             rm = true;
                         }
                     }
-
+                    //Guarda aqueles que nao alcancam nenhum dos de aceitacao
                     if (!rm) {
                         removed.add(i);
                     }
@@ -84,7 +79,7 @@ public class Main {
             });
             removed.clear();
             //Digrafo reduzido - sem estados inuteis nem estados inalcancaveis
-            //Digraphton.printT(Digraphton.reverseConvertTransition(d.getTransitions(), d.alphabetCont()));
+            //Busca estados equivalentes
             EstadosEquivalentes(d);
         } catch (FileNotFoundException e) {
             System.out.println("Arquivo nao encontrado");
@@ -207,7 +202,6 @@ public class Main {
         //em classes de equivalencia de estados com transicao definida sob os mesmos simbolos
 
         //3a Classe de Equivalencia: Transições iguais ou para estados equivalentes sob o mesmo simbolo
-        // int[][] transicoes = Digraphton.reverseConvertTransition(matrizDeAdjacencia, dig.alphabetCont());//Volta ao formato inicial
         for (i = 0; i < matrizDeEquivalencia.length; i++) {
             for (j = 0; j < matrizDeEquivalencia.length; j++) {
                 if (matrizDeEquivalencia[i][j] == EQUIVALENTE) {
