@@ -1,0 +1,7 @@
+Universidade de São Paulo
+Escola de Artes Ciências e Humanidades
+
+Caio Tavares Cruz - 8921840
+Giovani de Sousa Leite - 8921902
+
+Nota: Classe construida, compilada e testada na versão 8 - update 66 do Java.
