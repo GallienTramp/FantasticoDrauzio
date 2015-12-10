@@ -121,27 +121,27 @@ public class Afn {
 
     //Metodo de impressao de acordo com o modelo dado
     public String toString() {
-        String pinoquio = this.adjTransition.length + " " + this.adjTransition[0].length + " " + this.start + "\n"
+        String impressaoFinal = this.adjTransition.length + " " + this.adjTransition[0].length + " " + this.start + "\n"
                 + (accept[0] ? "1" : "0");
         for (int i = 1; i < this.accept.length; i++) {
-            pinoquio = pinoquio + (accept[i] ? " 1" : " 0");
+            impressaoFinal = impressaoFinal + (accept[i] ? " 1" : " 0");
         }
-        pinoquio = pinoquio + "\n";
+        impressaoFinal = impressaoFinal + "\n";
         int t[][] = adjTransition;
 
         for (int i = 0; i < t.length; i++) {
             for (int j = 0; j < t[i].length; j++) {
                 if (j == 0) {
-                    pinoquio = pinoquio + t[i][j];
+                    impressaoFinal = impressaoFinal + t[i][j];
                 } else {
-                    pinoquio = pinoquio + " " + t[i][j];
+                    impressaoFinal = impressaoFinal + " " + t[i][j];
                 }
             }
             if (i != t.length - 1) {
-                pinoquio = pinoquio + "\n";
+                impressaoFinal = impressaoFinal + "\n";
             }
         }
-        return pinoquio;
+        return impressaoFinal;
     }
     
     /*END: PARTE 1*/
@@ -264,7 +264,7 @@ public class Afn {
         
             //Estados inalcancaveis - Nao podem ser atingidos a partir do estado inicial
             boolean wall[] = DFS(d, d.whereAllBegins());//Faz uma busca em profundidade e recebe vetor com true para os que foram visitados e false cc.
-            ArrayList<Integer> removed = new ArrayList<Integer>();
+            ArrayList<Integer> removed = new ArrayList();
             //Os que nao foram visitados sao guardados num arrayList
             for (int i = 0; i < wall.length; i++) {
                 if (!wall[i]) {
@@ -273,9 +273,8 @@ public class Afn {
             }
             //Remover os estados
             Collections.sort(removed, Collections.reverseOrder());//eh ordenado em ordem decrescente
-            removed.stream().forEach((gone) -> {
-                d.byeState(gone);//Removido
-            });
+            for(int gone : removed)
+                d.byeState(gone);
             
             return d;
         
@@ -285,7 +284,7 @@ public class Afn {
     {
         
             //Estados inuteis - Estados que nao podem conduzir a um estado de aceitacao
-            ArrayList <Integer>removed = new ArrayList<Integer>();
+            ArrayList <Integer>removed = new ArrayList();
             //Faz uma busca em profundidade a partir de cada estado que nao eh de aceitacao
             boolean[] act = d.whereHappyMomentsHappens();
             for (int i = 0; i < act.length; i++) {
@@ -308,10 +307,9 @@ public class Afn {
 
             Collections.sort(removed, Collections.reverseOrder());//eh ordenado em ordem decrescente
             //Remover os estados inuteis encontrados
-            removed.stream().forEach((gone) -> {
-                //Remove estes
+            
+            for(int gone : removed)
                 d.byeState(gone);//Removido
-            });
             return d;
     }
     
